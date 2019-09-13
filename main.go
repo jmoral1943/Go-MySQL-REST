@@ -4,29 +4,18 @@ import (
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/jmoral1943/musicapi/app"
 )
 
 func main() {
 
 	// request.HandleRequests()
 
-	a := App{}
+	a := app.App{}
 	a.Initialize(os.Getenv("MusicAPIDB"))
 
 	a.Run(":8080")
 }
-
-// package main
-
-// import (
-// 	"encoding/json"
-// 	"fmt"
-// 	"io/ioutil"
-// 	"net/http"
-
-// 	"github.com/gorilla/mux"
-// 	"github.com/jmoral1943/musicapi/pkg/request"
-// )
 
 // func homePage(w http.ResponseWriter, r *http.Request) {
 // 	fmt.Fprintf(w, "Welcome to the HomePage!")
