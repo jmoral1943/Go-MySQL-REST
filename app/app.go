@@ -1,12 +1,15 @@
-package main
+package app
 
 import (
+	"encoding/json"
+
 	"database/sql"
 	"log"
 	"net/http"
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/jmoral1943/musicapi/model"
+	_ "github.com/go-sql-driver/mysql"
+	
 )
 
 // App has a pointer to the mux router and the mysql db
@@ -18,13 +21,14 @@ type App struct {
 // Initialize initializes the app to start the connection with the MySQL database
 func (a *App) Initialize(connection string) {
 
-	a.DB, err := sql.Open("mysql", connection)
+	var err error
+	a.DB, err = sql.Open("mysql", connection)
 
 	if err != nil {
 		panic(err.Error())
 	}
 
-	defer a.DB.Close()
+	// defer a.DB.Close()
 
 	a.Router = mux.NewRouter().StrictSlash(true)
 	a.initializeRoutes()
@@ -41,6 +45,7 @@ func (a *App) getSongs(w http.ResponseWriter, r *http.Request) {
 		panic(err.Error())
 	}
 
+	songs := []model.Song{}
 	for results.Next() {
 		var song model.Song
 
@@ -49,14 +54,11 @@ func (a *App) getSongs(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			panic(err.Error())
 		}
-
-		data, err := json.MarshalIndent(song, "", "   ")
-		if err != nil {
-			log.Fatalf("JSON marshalling failed: %s", err)
-		}
-
-		fmt.Printf("%s\n", data)
+		songs = append(songs, song)
+		
 	}
+	respondWithJSON(w, http.StatusOK, songs)
+
 }
 
 func (a *App) getSong(w http.ResponseWriter, r *http.Request) {
@@ -80,6 +82,18 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/song", a.createSong).Methods("POST")
 	a.Router.HandleFunc("/song/{id}", a.updateSong).Methods("PUT")
 	a.Router.HandleFunc("/song/{id}", a.deleteSong).Methods("DELETE")
+}
+
+func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
+	response, err := json.MarshalIndent(payload, "", "   ")
+
+	if err != nil {
+		log.Fatalf("JSON marshalling failed: %s", err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	w.Write(response)
 }
 
 // results, err := db.Query("SELECT * FROM Songs")
