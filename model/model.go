@@ -3,7 +3,6 @@ package model
 import (
 	"database/sql"
 	"log"
-	// "fmt"
 )
 
 // Song is the Json
