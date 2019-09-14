@@ -17,17 +17,6 @@ func main() {
 	a.Run(":8080")
 }
 
-// func homePage(w http.ResponseWriter, r *http.Request) {
-// 	fmt.Fprintf(w, "Welcome to the HomePage!")
-// 	fmt.Println("Endpoint Hit: homePage")
-// }
-
-// func returnAllArticles(w http.ResponseWriter, r *http.Request) {
-// 	fmt.Println("Endpoint Hit: returnAllArticles")
-
-// 	json.NewEncoder(w).Encode(Songs)
-// }
-
 // func returnSingleArticle(w http.ResponseWriter, r *http.Request) {
 // 	vars := mux.Vars(r)
 // 	key := vars["id"]
